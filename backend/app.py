@@ -1,6 +1,6 @@
 import os, re, json, logging, time, uuid
 from urllib.parse import urljoin
-from flask import Flask, request, jsonify, Response, stream_with_context
+from flask import Flask, request, jsonify, Response, stream_with_context, send_from_directory
 from flask_cors import CORS
 import cloudscraper, requests
 from bs4 import BeautifulSoup
@@ -9,7 +9,7 @@ from google.genai import types
 from dotenv import load_dotenv
 
 load_dotenv()
-app = Flask(__name__)
+app = Flask(__name__, static_folder="dist", static_url_path="")
 CORS(app)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)-7s | %(message)s", datefmt="%H:%M:%S")
 app.logger.setLevel(logging.INFO)
@@ -202,6 +202,13 @@ def chat_assistant():
         r = client.models.generate_content(model=GEMINI_MODEL, contents=prompt, config=types.GenerateContentConfig(temperature=0.0, max_output_tokens=512))
         return jsonify({"success": True, "reply": (r.text if r and r.text else "Sorry, I couldn't generate a response.").strip()})
     except Exception: return jsonify({"success": False, "reply": "The AI assistant is temporarily unavailable."}), 500
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve_frontend(path):
+    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    return send_from_directory(app.static_folder, "index.html")
 
 if __name__ == "__main__":
     app.logger.info(f"Starting Backend | Model: {GEMINI_MODEL}")
