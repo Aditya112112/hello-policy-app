@@ -5,7 +5,7 @@ import logging
 import time
 import uuid
 from urllib.parse import urljoin
-from flask import Flask, request, jsonify, Response, stream_with_context
+from flask import Flask, request, jsonify, Response, stream_with_context, send_from_directory
 from flask_cors import CORS
 import cloudscraper
 import requests
@@ -14,7 +14,7 @@ from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="../frontend/dist", static_url_path="")
 CORS(app)
 
 load_dotenv()
@@ -495,6 +495,14 @@ INSTRUCTIONS:
     except Exception as e:
         app.logger.error("[%s] === CHAT FAILED === | error=%s", request_id, str(e))
         return jsonify({"success": False, "reply": f"Chatbot Error: {str(e)}"}), 500
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve(path):
+    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, "index.html")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
