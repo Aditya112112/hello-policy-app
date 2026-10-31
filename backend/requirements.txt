@@ -3,3 +3,7 @@ Flask-Cors
 requests
 beautifulsoup4
 PyMuPDF
+cloudscraper
+python-dotenv
+google-genai
+gunicorn

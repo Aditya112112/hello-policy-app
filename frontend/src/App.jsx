@@ -3,7 +3,7 @@ import { jsPDF } from "jspdf";
 import wcagImg from "./assets/wcag.png";
 import owaspImg from "./assets/asvs.png";
 import tlsImg from "./assets/tls.png";
-import logoImg from "./assets/logo.png";
+import logoImg from "./assets/logo1.png";
 import "./App.css";
 
 // Dynamic API Base URL for Production (Azure) and Local development
