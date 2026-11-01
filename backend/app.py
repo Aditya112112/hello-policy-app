@@ -9,8 +9,16 @@ from google.genai import types
 from dotenv import load_dotenv
 
 load_dotenv()
-app = Flask(__name__, static_folder="frontend/dist", static_url_path="")
-CORS(app)
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, "frontend", "dist")
+
+# static_folder=None se Flask ka default path conflict band ho jayega
+app = Flask(__name__, static_folder=None)
+
+# ✅ CORS UPDATE: Azure frontend se API calls allow karne ke liye
+CORS(app, resources={r"/api/*": {"origins": "*"}})
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)-7s | %(message)s", datefmt="%H:%M:%S")
 app.logger.setLevel(logging.INFO)
 
@@ -203,13 +211,23 @@ def chat_assistant():
         return jsonify({"success": True, "reply": (r.text if r and r.text else "Sorry, I couldn't generate a response.").strip()})
     except Exception: return jsonify({"success": False, "reply": "The AI assistant is temporarily unavailable."}), 500
 
+# ✅ SERVE SPA UPDATE: Azure par "Not Found" fix karne ke liye
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
-def serve_frontend(path):
-    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
-        return send_from_directory(app.static_folder, path)
-    return send_from_directory(app.static_folder, "index.html")
+def serve_spa(path):
+    # Agar local mein frontend/dist folder exist karta hai
+    if os.path.exists(STATIC_DIR):
+        if path != "" and os.path.exists(os.path.join(STATIC_DIR, path)):
+            return send_from_directory(STATIC_DIR, path)
+        return send_from_directory(STATIC_DIR, "index.html")
+    
+    # Agar dist folder nahi hai (Azure par), toh clean JSON message bhejo
+    return jsonify({
+        "status": "success",
+        "message": "Privacy Policy Analyzer Backend is running perfectly!",
+        "available_endpoints": ["/api/check-text-stream", "/api/check-url-stream", "/api/chat"]
+    }), 200
 
 if __name__ == "__main__":
-    app.logger.info(f"Starting Backend | Model: {GEMINI_MODEL}")
+    app.logger.info(f"Starting Backend | Model: {GEMINI_MODEL} | Serving: {STATIC_DIR}")
     app.run(debug=False, port=5001)

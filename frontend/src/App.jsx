@@ -6,7 +6,10 @@ import tlsImg from "./assets/tls.png";
 import logoImg from "./assets/logo1.png";
 import "./App.css";
 
-const API = "", META = { gdpr: { label: "GDPR", desc: "EU General Data Protection Regulation" }, ccpa: { label: "CCPA", desc: "California Consumer Privacy Act" }, pci_dss: { label: "PCI-DSS", desc: "Payment Card Industry Standards" } };
+// ⚠️ YAHAN APNA AZURE BACKEND URL DAALO (Bina end slash ke)
+const API = "https://hello-policy-app-g8fjg0fjbmdhgfbq.uaenorth-01.azurewebsites.net/"; 
+
+const META = { gdpr: { label: "GDPR", desc: "EU General Data Protection Regulation" }, ccpa: { label: "CCPA", desc: "California Consumer Privacy Act" }, pci_dss: { label: "PCI-DSS", desc: "Payment Card Industry Standards" } };
 const BADGE = { compliant: { label: "Compliant", style: "badge-success", icon: "✓" }, partial: { label: "Needs Fix", style: "badge-warning", icon: "~" }, non_compliant: { label: "Non-Compliant", style: "badge-danger", icon: "✕" } };
 const getRisk = (d) => (Number(d?.score ?? 0) > 99 ? "No Risk" : d?.risk || "Low Risk");
 const riskBadge = (r) => (r === "No Risk" || r === "Low Risk" ? "risk-low" : r === "Medium Risk" ? "risk-med" : "risk-high");
