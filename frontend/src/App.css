@@ -140,7 +140,7 @@ body { font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif; background-color:
 .loading-spinner { width: 18px; height: 18px; border: 2.5px solid #cbd5e1; border-top-color: #009dff; border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .trust-badge { width: 270px; max-width: 90%; height: auto; mix-blend-mode: multiply; }
-.trust-badge:nth-child(3) { width: 215px; }
+.trust-badge:nth-child(3) { width: 180px; }
 
 /* RESPONSIVE */
 @media (max-width: 950px) {

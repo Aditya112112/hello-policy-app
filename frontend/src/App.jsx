@@ -6,7 +6,6 @@ import tlsImg from "./assets/tls.png";
 import logoImg from "./assets/logo1.png";
 import "./App.css";
 
-// ⚠️ YAHAN APNA AZURE BACKEND URL DAALO (Bina end slash ke)
 const API = ""; 
 
 const META = { gdpr: { label: "GDPR", desc: "EU General Data Protection Regulation" }, ccpa: { label: "CCPA", desc: "California Consumer Privacy Act" }, pci_dss: { label: "PCI-DSS", desc: "Payment Card Industry Standards" } };
@@ -31,8 +30,8 @@ export default function App() {
       y += gap;
     };
     doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(15, 23, 42); doc.text("HELLO POLICY - AUDIT REPORT", 40, 55);
-    doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(71, 85, 105); doc.text(clean("Target: " + (f.mode === "url" ? f.url : "Pasted policy text")), 40, 75);
-    if (app.res.engine) { doc.setFontSize(9); doc.setTextColor(100, 116, 139); doc.text(clean("Engine: " + app.res.engine), 40, 89); }
+    doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(71, 85, 105); doc.text(clean((f.mode === "url" ? f.url : "Pasted policy text")), 40, 75);
+    if (app.res.engine) { doc.setFontSize(9); doc.setTextColor(100, 116, 139); }
     const all = Object.values(app.res.checks || {}).flatMap((c) => Object.values(c)), [nOk, nP] = [all.filter((x) => x.status === "compliant").length, all.filter((x) => x.status === "partial").length];
     write("SUMMARY", { size: 14, bold: true, gap: 6 });
     write(`${all.length} clauses checked: ${nOk} compliant, ${nP} need fixes, ${all.length - nOk - nP} non-compliant.`, { gap: 8 });
@@ -241,9 +240,9 @@ export default function App() {
           <a href="/asvs-real.pdf" target="_blank" rel="noopener noreferrer" title="View OWASP ASVS Security Verification Report" style={{ display: "inline-block", cursor: "pointer" }}>
             <img src={owaspImg} alt="OWASP ASVS Aligned" className="trust-badge" />
           </a>
-          <img src={tlsImg} alt="TLS 1.3 Encrypted" className="trust-badge" />
-        </div>
-      </footer>
-    </div>
-  );
+         <img src="/https1.png" alt="HTTPS Badge" className="trust-badge" />
+</div>
+  </footer>
+</div>
+);
 }
