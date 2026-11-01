@@ -220,19 +220,22 @@ def chat_assistant():
         return jsonify({"success": True, "reply": (r.text if r and r.text else "Sorry, I couldn't generate a response.").strip()})
     except Exception: return jsonify({"success": False, "reply": "The AI assistant is temporarily unavailable."}), 500
 
-# React Frontend Serve Route
+# React Frontend aur JS/CSS Assets delivery handler
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def serve_spa(path):
-    if STATIC_DIR and os.path.exists(STATIC_DIR):
-        if path != "" and os.path.exists(os.path.join(STATIC_DIR, path)):
-            return send_from_directory(STATIC_DIR, path)
-        return send_from_directory(STATIC_DIR, "index.html")
-    return jsonify({
-        "status": "error",
-        "message": "Frontend build files not found. Ensure dist/index.html is deployed.",
-        "checked_paths": CANDIDATE_PATHS
-    }), 404
+    if not STATIC_DIR or not os.path.exists(STATIC_DIR):
+        return jsonify({
+            "status": "error",
+            "message": "Frontend build files not found. Ensure dist/index.html is deployed.",
+            "checked_paths": CANDIDATE_PATHS
+        }), 404
+
+    target_file = os.path.join(STATIC_DIR, path)
+    if path != "" and os.path.exists(target_file) and not os.path.isdir(target_file):
+        return send_from_directory(STATIC_DIR, path)
+
+    return send_from_directory(STATIC_DIR, "index.html")
 
 if __name__ == "__main__":
     app.logger.info(f"Starting Backend | Model: {GEMINI_MODEL} | Serving: {STATIC_DIR}")
