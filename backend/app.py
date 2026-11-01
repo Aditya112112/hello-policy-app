@@ -11,12 +11,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PARENT_DIR = os.path.abspath(os.path.join(BASE_DIR, ".."))
 
-# Dono jagah check karega: chahe dist bahar root me ho ya frontend/dist me
-if os.path.exists(os.path.join(BASE_DIR, "dist")):
-    STATIC_DIR = os.path.join(BASE_DIR, "dist")
-else:
-    STATIC_DIR = os.path.join(BASE_DIR, "frontend", "dist")
+# Azure Linux par har potential frontend build location ko dynamically detect karega
+CANDIDATE_PATHS = [
+    os.path.join(BASE_DIR, "dist"),
+    os.path.join(BASE_DIR, "frontend", "dist"),
+    os.path.join(PARENT_DIR, "dist"),
+    os.path.join(PARENT_DIR, "frontend", "dist"),
+]
+
+STATIC_DIR = next((p for p in CANDIDATE_PATHS if os.path.exists(p) and os.path.exists(os.path.join(p, "index.html"))), None)
 
 app = Flask(__name__, static_folder=None)
 
@@ -215,13 +220,19 @@ def chat_assistant():
         return jsonify({"success": True, "reply": (r.text if r and r.text else "Sorry, I couldn't generate a response.").strip()})
     except Exception: return jsonify({"success": False, "reply": "The AI assistant is temporarily unavailable."}), 500
 
-# React Frontend Serve karne ke liye direct route
+# React Frontend Serve Route
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def serve_spa(path):
-    if path != "" and os.path.exists(os.path.join(STATIC_DIR, path)):
-        return send_from_directory(STATIC_DIR, path)
-    return send_from_directory(STATIC_DIR, "index.html")
+    if STATIC_DIR and os.path.exists(STATIC_DIR):
+        if path != "" and os.path.exists(os.path.join(STATIC_DIR, path)):
+            return send_from_directory(STATIC_DIR, path)
+        return send_from_directory(STATIC_DIR, "index.html")
+    return jsonify({
+        "status": "error",
+        "message": "Frontend build files not found. Ensure dist/index.html is deployed.",
+        "checked_paths": CANDIDATE_PATHS
+    }), 404
 
 if __name__ == "__main__":
     app.logger.info(f"Starting Backend | Model: {GEMINI_MODEL} | Serving: {STATIC_DIR}")
