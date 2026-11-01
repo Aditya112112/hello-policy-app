@@ -7,7 +7,7 @@ import logoImg from "./assets/logo1.png";
 import "./App.css";
 
 // ⚠️ YAHAN APNA AZURE BACKEND URL DAALO (Bina end slash ke)
-const API = "https://hello-policy-app-g8fjg0fjbmdhgfbq.uaenorth-01.azurewebsites.net/"; 
+const API = ""; 
 
 const META = { gdpr: { label: "GDPR", desc: "EU General Data Protection Regulation" }, ccpa: { label: "CCPA", desc: "California Consumer Privacy Act" }, pci_dss: { label: "PCI-DSS", desc: "Payment Card Industry Standards" } };
 const BADGE = { compliant: { label: "Compliant", style: "badge-success", icon: "✓" }, partial: { label: "Needs Fix", style: "badge-warning", icon: "~" }, non_compliant: { label: "Non-Compliant", style: "badge-danger", icon: "✕" } };
