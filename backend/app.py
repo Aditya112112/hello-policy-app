@@ -11,12 +11,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_DIR = os.path.join(BASE_DIR, "frontend", "dist")
 
-# static_folder=None se Flask ka default path conflict band ho jayega
+# Dono jagah check karega: chahe dist bahar root me ho ya frontend/dist me
+if os.path.exists(os.path.join(BASE_DIR, "dist")):
+    STATIC_DIR = os.path.join(BASE_DIR, "dist")
+else:
+    STATIC_DIR = os.path.join(BASE_DIR, "frontend", "dist")
+
 app = Flask(__name__, static_folder=None)
 
-# ✅ CORS UPDATE: Azure frontend se API calls allow karne ke liye
+# CORS enabled
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)-7s | %(message)s", datefmt="%H:%M:%S")
@@ -211,22 +215,13 @@ def chat_assistant():
         return jsonify({"success": True, "reply": (r.text if r and r.text else "Sorry, I couldn't generate a response.").strip()})
     except Exception: return jsonify({"success": False, "reply": "The AI assistant is temporarily unavailable."}), 500
 
-# ✅ SERVE SPA UPDATE: Azure par "Not Found" fix karne ke liye
+# React Frontend Serve karne ke liye direct route
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def serve_spa(path):
-    # Agar local mein frontend/dist folder exist karta hai
-    if os.path.exists(STATIC_DIR):
-        if path != "" and os.path.exists(os.path.join(STATIC_DIR, path)):
-            return send_from_directory(STATIC_DIR, path)
-        return send_from_directory(STATIC_DIR, "index.html")
-    
-    # Agar dist folder nahi hai (Azure par), toh clean JSON message bhejo
-    return jsonify({
-        "status": "success",
-        "message": "Privacy Policy Analyzer Backend is running perfectly!",
-        "available_endpoints": ["/api/check-text-stream", "/api/check-url-stream", "/api/chat"]
-    }), 200
+    if path != "" and os.path.exists(os.path.join(STATIC_DIR, path)):
+        return send_from_directory(STATIC_DIR, path)
+    return send_from_directory(STATIC_DIR, "index.html")
 
 if __name__ == "__main__":
     app.logger.info(f"Starting Backend | Model: {GEMINI_MODEL} | Serving: {STATIC_DIR}")
