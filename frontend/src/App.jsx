@@ -214,7 +214,7 @@ export default function App() {
               <h4>6. Cookies and tracking</h4><p>We do not use cookies, accounts, analytics, advertising trackers, or local storage to track you.</p>
               <h4>7. Payments</h4><p>The tool is free. We do not ask for, collect, process or store any payment, credit card, or bank information of any kind.</p>
               <h4>8. User rights</h4><p>Hello Policy maintains an ephemeral architecture and retains zero user accounts or submitted documents in any database, there are no persistent personal records stored to access, modify, or erase.</p>
-              <h4>9. Security</h4><p>All network communication between client, backend, and external AI services is secured using TLS encryption. Application code is audited against WCAG and OWASP ASVP standards.</p>
+              <h4>9. Security</h4><p>This website uses a HTTPS connection. Application code is audited against WCAG and OWASP ASVS standards.</p>
               <h4>10. Updates and disclaimer</h4><p>We may update this policy to reflect future technical enhancements. All audit assessments are automated educational outputs and do not represent legally binding advice.</p>
             </div>
           </div>
